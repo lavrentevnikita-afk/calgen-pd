@@ -9,13 +9,12 @@
     }
 
     :root {
-      --bg: #101012;
-      --card-bg: #ffffff;
+      --card-bg: #181824;
       --accent: #ff6b4a;
-      --accent-2: #0084ff;
-      --text-main: #222222;
-      --text-muted: #777777;
-      --weekend: #e53935;
+      --accent-2: #4aa0ff;
+      --text-main: #f7f7ff;
+      --text-muted: #b7b9c9;
+      --weekend: #ff7b73;
       --radius: 24px;
       --nav-bg: rgba(20, 20, 28, 0.86);
       --nav-border: rgba(255, 255, 255, 0.08);
@@ -24,6 +23,15 @@
       --nav-icon: rgba(255, 255, 255, 0.08);
       --nav-icon-hover: rgba(255, 255, 255, 0.14);
       --nav-strong: #ffffff;
+      --body-bg: radial-gradient(circle at top, #303040, #050509);
+      --body-text: #f7f7f7;
+      --panel-bg: rgba(15, 15, 20, 0.9);
+      --panel-border: rgba(255, 255, 255, 0.06);
+      --panel-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
+      --hint: #8888a4;
+      --input-bg: #161621;
+      --input-border: #343449;
+      --input-text: #f5f5ff;
     }
 
     * {
@@ -37,8 +45,8 @@
       padding: 24px;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
         sans-serif;
-      background: radial-gradient(circle at top, #303040, #050509);
-      color: #f7f7f7;
+      background: var(--body-bg);
+      color: var(--body-text);
       display: flex;
       flex-direction: column;
       gap: 24px;
@@ -80,14 +88,15 @@
     .panel {
       width: 100%;
       max-width: 960px;
-      background: rgba(15, 15, 20, 0.9);
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
       border-radius: 18px;
       padding: 16px 20px;
       display: flex;
       flex-wrap: wrap;
       gap: 16px;
       align-items: center;
-      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
+      box-shadow: var(--panel-shadow);
       backdrop-filter: blur(12px);
     }
 
@@ -131,25 +140,19 @@
       opacity: 1;
     }
 
-    .floating-nav h2 {
-      margin: 0 0 4px;
-      font-size: 13px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: #d7d9ee;
-    }
-
     .nav-list {
       display: flex;
       flex-direction: column;
       gap: 6px;
+      margin: 6px 0 0;
     }
 
     .nav-item {
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 10px;
-      padding: 8px 10px;
+      padding: 8px;
       border-radius: 12px;
       color: var(--nav-text);
       text-decoration: none;
@@ -157,6 +160,7 @@
       background: rgba(255, 255, 255, 0.02);
       border: 1px solid transparent;
       transition: 0.2s ease;
+      position: relative;
     }
 
     .nav-item:hover {
@@ -193,6 +197,31 @@
     .nav-item:hover .nav-icon {
       background: var(--nav-icon-hover);
       transform: translateY(-1px);
+    }
+
+    .nav-label {
+      position: absolute;
+      left: 46px;
+      padding: 6px 10px;
+      background: var(--nav-bg);
+      color: var(--nav-text);
+      border: 1px solid var(--nav-border);
+      border-radius: 10px;
+      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.35);
+      white-space: nowrap;
+      opacity: 0;
+      transform: translateX(-6px);
+      pointer-events: none;
+      transition: opacity 0.18s ease, transform 0.18s ease;
+      font-weight: 600;
+    }
+
+    .nav-item:hover .nav-label,
+    .nav-item:focus-visible .nav-label,
+    .nav-item:focus-within .nav-label,
+    .nav-item.active .nav-label {
+      opacity: 1;
+      transform: translateX(0);
     }
 
     @media (max-width: 1080px) {
@@ -233,7 +262,22 @@
       background: rgba(255, 107, 74, 0.1);
     }
 
-    body[data-nav-theme="light"] {
+    body[data-theme="light"] {
+      --body-bg: radial-gradient(circle at 20% 10%, #ffffff, #dce6f4);
+      --body-text: #0f172a;
+      --panel-bg: rgba(255, 255, 255, 0.94);
+      --panel-border: rgba(15, 23, 42, 0.08);
+      --panel-shadow: 0 18px 36px rgba(15, 23, 42, 0.18);
+      --card-bg: #ffffff;
+      --text-main: #0f1828;
+      --text-muted: #4f5668;
+      --accent: #0072ff;
+      --accent-2: #12a0ff;
+      --weekend: #e53935;
+      --hint: #5b6270;
+      --input-bg: #f3f5fb;
+      --input-border: #cfd5e6;
+      --input-text: #0f172a;
       --nav-bg: rgba(255, 255, 255, 0.96);
       --nav-border: rgba(0, 0, 0, 0.08);
       --nav-text: #1f2533;
@@ -243,7 +287,22 @@
       --nav-strong: #0f1729;
     }
 
-    body[data-nav-theme="dark"] {
+    body[data-theme="dark"] {
+      --body-bg: radial-gradient(circle at top, #303040, #050509);
+      --body-text: #f7f7f7;
+      --panel-bg: rgba(15, 15, 20, 0.9);
+      --panel-border: rgba(255, 255, 255, 0.06);
+      --panel-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
+      --card-bg: #181824;
+      --text-main: #f7f7ff;
+      --text-muted: #b7b9c9;
+      --accent: #ff6b4a;
+      --accent-2: #4aa0ff;
+      --weekend: #ff7b73;
+      --hint: #8888a4;
+      --input-bg: #161621;
+      --input-border: #343449;
+      --input-text: #f5f5ff;
       --nav-bg: rgba(20, 20, 28, 0.86);
       --nav-border: rgba(255, 255, 255, 0.08);
       --nav-text: #dfe2ff;
@@ -253,8 +312,27 @@
       --nav-strong: #ffffff;
     }
 
-    body[data-nav-theme="neon"] {
-      --nav-bg: radial-gradient(circle at 20% 20%, rgba(0, 255, 213, 0.15), rgba(18, 18, 28, 0.9));
+    body[data-theme="neon"] {
+      --body-bg: radial-gradient(circle at 12% 10%, rgba(0, 255, 213, 0.28), #090a12 60%);
+      --body-text: #dcfff6;
+      --panel-bg: rgba(12, 18, 24, 0.9);
+      --panel-border: rgba(0, 255, 213, 0.3);
+      --panel-shadow: 0 18px 40px rgba(0, 255, 213, 0.18);
+      --card-bg: #0f1622;
+      --text-main: #dcfff6;
+      --text-muted: #9ad6c8;
+      --accent: #00ffd5;
+      --accent-2: #4ae7ff;
+      --weekend: #ff8a6b;
+      --hint: #7cc7b4;
+      --input-bg: #0e1824;
+      --input-border: rgba(0, 255, 213, 0.35);
+      --input-text: #dcfff6;
+      --nav-bg: radial-gradient(
+        circle at 20% 20%,
+        rgba(0, 255, 213, 0.15),
+        rgba(18, 18, 28, 0.9)
+      );
       --nav-border: rgba(0, 255, 213, 0.35);
       --nav-text: #b5fff6;
       --nav-accent: #00ffd5;
@@ -285,7 +363,7 @@
     }
 
     .field label {
-      color: #ccccd7;
+      color: var(--body-text);
     }
 
     input[type="number"],
@@ -293,8 +371,9 @@
       padding: 6px 10px;
       border-radius: 10px;
       border: 1px solid #343449;
-      background: #161621;
-      color: #f5f5ff;
+      background: var(--input-bg);
+      color: var(--input-text);
+      border: 1px solid var(--input-border);
       font-size: 13px;
       min-width: 80px;
     }
@@ -307,12 +386,12 @@
 
     input[type="file"] {
       font-size: 13px;
-      color: #d0d0e0;
+      color: var(--input-text);
     }
 
     .hint {
       font-size: 11px;
-      color: #8888a4;
+      color: var(--hint);
     }
 
     /* Карточки */
@@ -600,7 +679,7 @@
     }
   </style>
 </head>
-<body data-nav-theme="dark">
+<body data-theme="dark">
   <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
     <symbol id="icon-pin" viewBox="0 0 24 24">
       <path d="M12 3 8 8c-1.2 1.6-1 3.8.5 5l3.5 3-1.3 4 3.4-3.6L16 15c1.5-1.2 1.7-3.4.5-5L12 3Z" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linejoin="round" />
@@ -694,64 +773,64 @@
 
   <div class="layout main-layout">
     <aside class="floating-nav" id="floatingNav">
-      <h2>Навигация</h2>
+      <h2 style="margin: 0 0 6px; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--nav-text);">Навигация</h2>
       <div class="theme-switcher" aria-label="Темы меню">
         <button class="theme-button" data-theme="light" type="button">Светлая</button>
         <button class="theme-button active" data-theme="dark" type="button">Тёмная</button>
         <button class="theme-button" data-theme="neon" type="button">Неон</button>
       </div>
       <div class="nav-list" id="navList">
-        <a class="nav-item" href="#menu" data-target="menu">
+        <a class="nav-item" href="#menu" data-target="menu" aria-label="Меню">
           <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" class="nav-icon-asset"><use href="#icon-pin"></use></svg></span>
-          <span>Меню</span>
+          <span class="nav-label" aria-hidden="true">Меню</span>
         </a>
-        <a class="nav-item" href="#cards-panel" data-target="cards-panel">
+        <a class="nav-item" href="#cards-panel" data-target="cards-panel" aria-label="Карточки">
           <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" class="nav-icon-asset"><use href="#icon-cards"></use></svg></span>
-          <span>Карточки</span>
+          <span class="nav-label" aria-hidden="true">Карточки</span>
         </a>
-        <a class="nav-item" href="#interact" data-target="interact">
+        <a class="nav-item" href="#interact" data-target="interact" aria-label="Взаимодействие">
           <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" class="nav-icon-asset"><use href="#icon-hotkeys"></use></svg></span>
-          <span>Взаимодействие</span>
+          <span class="nav-label" aria-hidden="true">Взаимодействие</span>
         </a>
-        <a class="nav-item" href="#upload" data-target="upload">
+        <a class="nav-item" href="#upload" data-target="upload" aria-label="Загрузка">
           <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" class="nav-icon-asset"><use href="#icon-upload"></use></svg></span>
-          <span>Загрузка</span>
+          <span class="nav-label" aria-hidden="true">Загрузка</span>
         </a>
-        <a class="nav-item" href="#images" data-target="images">
+        <a class="nav-item" href="#images" data-target="images" aria-label="Обработка">
           <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" class="nav-icon-asset"><use href="#icon-edit"></use></svg></span>
-          <span>Обработка</span>
+          <span class="nav-label" aria-hidden="true">Обработка</span>
         </a>
-        <a class="nav-item" href="#holidays" data-target="holidays">
+        <a class="nav-item" href="#holidays" data-target="holidays" aria-label="События">
           <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" class="nav-icon-asset"><use href="#icon-party"></use></svg></span>
-          <span>События</span>
+          <span class="nav-label" aria-hidden="true">События</span>
         </a>
-        <a class="nav-item" href="#grid" data-target="grid">
+        <a class="nav-item" href="#grid" data-target="grid" aria-label="Сетка">
           <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" class="nav-icon-asset"><use href="#icon-calendar"></use></svg></span>
-          <span>Сетка</span>
+          <span class="nav-label" aria-hidden="true">Сетка</span>
         </a>
-        <a class="nav-item" href="#advanced" data-target="advanced">
+        <a class="nav-item" href="#advanced" data-target="advanced" aria-label="Продвинутое">
           <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" class="nav-icon-asset"><use href="#icon-rocket"></use></svg></span>
-          <span>Продвинутое</span>
+          <span class="nav-label" aria-hidden="true">Продвинутое</span>
         </a>
-        <a class="nav-item" href="#themes" data-target="themes">
+        <a class="nav-item" href="#themes" data-target="themes" aria-label="Темы">
           <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" class="nav-icon-asset"><use href="#icon-theme"></use></svg></span>
-          <span>Темы</span>
+          <span class="nav-label" aria-hidden="true">Темы</span>
         </a>
-        <a class="nav-item" href="#typography" data-target="typography">
+        <a class="nav-item" href="#typography" data-target="typography" aria-label="Типографика">
           <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" class="nav-icon-asset"><use href="#icon-type"></use></svg></span>
-          <span>Типографика</span>
+          <span class="nav-label" aria-hidden="true">Типографика</span>
         </a>
-        <a class="nav-item" href="#palette" data-target="palette">
+        <a class="nav-item" href="#palette" data-target="palette" aria-label="Цветовые схемы">
           <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" class="nav-icon-asset"><use href="#icon-target"></use></svg></span>
-          <span>Цветовые схемы</span>
+          <span class="nav-label" aria-hidden="true">Цветовые схемы</span>
         </a>
-        <a class="nav-item" href="#export" data-target="export">
+        <a class="nav-item" href="#export" data-target="export" aria-label="Экспорт">
           <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" class="nav-icon-asset"><use href="#icon-export"></use></svg></span>
-          <span>Экспорт</span>
+          <span class="nav-label" aria-hidden="true">Экспорт</span>
         </a>
-        <a class="nav-item" href="#print" data-target="print">
+        <a class="nav-item" href="#print" data-target="print" aria-label="Печать">
           <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" class="nav-icon-asset"><use href="#icon-printer"></use></svg></span>
-          <span>Печать</span>
+          <span class="nav-label" aria-hidden="true">Печать</span>
         </a>
       </div>
     </aside>
@@ -765,7 +844,7 @@
 
   <section class="layout" style="gap: 18px; align-items: flex-start;">
     <div style="grid-column: span 2; display: grid; gap: 16px;">
-      <div id="menu" class="panel" style="background: rgba(18,18,26,0.85);">
+      <div id="menu" class="panel">
         <div class="panel-left">
           <h2 style="margin: 0;">Левое фиксированное меню</h2>
           <div class="hint">Летающее закреплённое меню с мягкой анимацией при прокрутке.</div>
@@ -786,7 +865,7 @@
         </div>
       </div>
 
-      <div id="cards-panel" class="panel" style="background: rgba(18,18,26,0.85);">
+      <div id="cards-panel" class="panel">
         <div class="panel-left">
           <h2 style="margin: 0;">Карточки календаря</h2>
           <div class="hint">Масштаб, макеты, рамки, плотность и Drag & Drop.</div>
@@ -800,7 +879,7 @@
         </div>
       </div>
 
-      <div id="interact" class="panel" style="background: rgba(18,18,26,0.85);">
+      <div id="interact" class="panel">
         <div class="panel-left">
           <h2 style="margin: 0;">Взаимодействие</h2>
           <div class="hint">Горячие клавиши, Undo/Redo и автосохранение.</div>
@@ -813,7 +892,7 @@
         </div>
       </div>
 
-      <div id="upload" class="panel" style="background: rgba(18,18,26,0.85);">
+      <div id="upload" class="panel">
         <div class="panel-left">
           <h2 style="margin: 0;">Загрузка</h2>
           <div class="hint">Ускоренная загрузка и замена фотографий.</div>
@@ -826,7 +905,7 @@
         </div>
       </div>
 
-      <div id="images" class="panel" style="background: rgba(18,18,26,0.85);">
+      <div id="images" class="panel">
         <div class="panel-left">
           <h2 style="margin: 0;">Обработка изображений</h2>
           <div class="hint">Регулировки, фильтры и умный кроп.</div>
@@ -839,7 +918,7 @@
         </div>
       </div>
 
-      <div id="holidays" class="panel" style="background: rgba(18,18,26,0.85);">
+      <div id="holidays" class="panel">
         <div class="panel-left">
           <h2 style="margin: 0;">События и праздники</h2>
           <div class="hint">Гос. праздники, пользовательские события и подсветки.</div>
@@ -851,7 +930,7 @@
         </div>
       </div>
 
-      <div id="grid" class="panel" style="background: rgba(18,18,26,0.85);">
+      <div id="grid" class="panel">
         <div class="panel-left">
           <h2 style="margin: 0;">Настройки сетки</h2>
           <div class="hint">Форматы дат, выходные и начало недели.</div>
@@ -863,7 +942,7 @@
         </div>
       </div>
 
-      <div id="advanced" class="panel" style="background: rgba(18,18,26,0.85);">
+      <div id="advanced" class="panel">
         <div class="panel-left">
           <h2 style="margin: 0;">Продвинутые фичи</h2>
           <div class="hint">Лунные фазы, текущий день и скрытие выходных.</div>
@@ -875,28 +954,28 @@
         </div>
       </div>
 
-      <div id="themes" class="panel" style="background: rgba(18,18,26,0.85);">
+      <div id="themes" class="panel">
         <div class="panel-left">
           <h2 style="margin: 0;">Глобальные темы</h2>
           <div class="hint">Минимализм, премиум-чёрная, пастельная, неоновая, бумажная.</div>
         </div>
       </div>
 
-      <div id="typography" class="panel" style="background: rgba(18,18,26,0.85);">
+      <div id="typography" class="panel">
         <div class="panel-left">
           <h2 style="margin: 0;">Типографика</h2>
           <div class="hint">Google Fonts, размеры и толщина, сглаживание/резкость.</div>
         </div>
       </div>
 
-      <div id="palette" class="panel" style="background: rgba(18,18,26,0.85);">
+      <div id="palette" class="panel">
         <div class="panel-left">
           <h2 style="margin: 0;">Цветовые схемы</h2>
           <div class="hint">Акцентный цвет, палитра из изображения, сезонные наборы.</div>
         </div>
       </div>
 
-      <div id="export" class="panel" style="background: rgba(18,18,26,0.85);">
+      <div id="export" class="panel">
         <div class="panel-left">
           <h2 style="margin: 0;">Экспорт</h2>
           <div class="hint">PDF, PNG, SVG и рендер в 300 DPI.</div>
@@ -909,7 +988,7 @@
         </div>
       </div>
 
-      <div id="print" class="panel" style="background: rgba(18,18,26,0.85);">
+      <div id="print" class="panel">
         <div class="panel-left">
           <h2 style="margin: 0;">Печать</h2>
           <div class="hint">Метки обреза, поля, выравнивание и режимы PDF.</div>
@@ -1226,7 +1305,7 @@
     themeButtons.forEach(btn => {
       btn.addEventListener("click", () => {
         themeButtons.forEach(b => b.classList.toggle("active", b === btn));
-        document.body.dataset.navTheme = btn.dataset.theme;
+        document.body.dataset.theme = btn.dataset.theme;
       });
     });
 
