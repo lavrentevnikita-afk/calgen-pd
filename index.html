@@ -431,51 +431,26 @@
     .side-menu {
       position: fixed;
       left: 20px;
-      top: 32px;
+      top: 50%;
       width: 74px;
       padding: 12px 10px;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 10px;
+      transform: translateY(-50%);
       background: var(--menu-bg);
       border: 1px solid var(--menu-border);
       box-shadow: 0 18px 40px var(--menu-shadow);
       border-radius: 24px;
-      transition: all 0.3s ease-out;
       z-index: 10;
-      opacity: 1;
-    }
-
-    .side-menu.compact {
-      padding: 8px 8px;
-      gap: 8px;
-      border-radius: 20px;
-      transform: translateY(-4px) scale(0.98);
-      opacity: 0.95;
-    }
-
-    .side-menu.idle {
-      opacity: 0.8;
-    }
-
-    .side-menu:hover,
-    .side-menu:focus-within {
-      opacity: 1;
-      box-shadow: 0 22px 44px var(--menu-shadow);
-    }
-
-    .menu-title {
-      font-size: 12px;
-      color: var(--menu-muted);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
     }
 
     .menu-items {
       display: flex;
       flex-direction: column;
       gap: 8px;
+      align-items: center;
     }
 
     .menu-item {
@@ -567,20 +542,10 @@
       transition: all 0.28s ease-out;
     }
 
-    .side-menu.compact .menu-button {
-      width: 48px;
-      height: 48px;
-      border-radius: 16px;
-    }
-
-    .side-menu.compact .menu-footer-dot {
-      box-shadow: 0 0 0 4px var(--menu-active-glow);
-    }
   </style>
 </head>
 <body>
   <nav class="side-menu" aria-label="Навигация">
-    <div class="menu-title">Навигация</div>
     <ul class="menu-items">
       <li class="menu-item">
         <button class="menu-button active" type="button" data-label="События">
@@ -767,7 +732,6 @@
     const imagesInput = document.getElementById("images");
     const holidaysInput = document.getElementById("holidays");
     const menuThemeSelect = document.getElementById("menu-theme");
-    const sideMenu = document.querySelector(".side-menu");
     const menuButtons = Array.from(document.querySelectorAll(".menu-button"));
     const cardsContainer = document.getElementById("cards");
 
@@ -996,41 +960,13 @@
     applyMenuTheme(menuThemeSelect.value);
     menuThemeSelect.addEventListener("change", () => applyMenuTheme(menuThemeSelect.value));
 
-    // Состояния меню при скролле и бездействии
-    let lastScrollY = window.scrollY;
-    let idleTimer;
-
-    function resetIdleTimer() {
-      sideMenu.classList.remove("idle");
-      clearTimeout(idleTimer);
-      idleTimer = setTimeout(() => sideMenu.classList.add("idle"), 2000);
-    }
-
-    window.addEventListener("scroll", () => {
-      const currentY = window.scrollY;
-      if (currentY > lastScrollY + 4) {
-        sideMenu.classList.add("compact");
-      } else if (currentY < lastScrollY - 4) {
-        sideMenu.classList.remove("compact");
-      }
-      lastScrollY = currentY;
-      resetIdleTimer();
-    });
-
-    sideMenu.addEventListener("mouseenter", () => sideMenu.classList.remove("idle"));
-    sideMenu.addEventListener("mouseleave", resetIdleTimer);
-
     // Активные элементы меню
     menuButtons.forEach(btn => {
       btn.addEventListener("click", () => {
         menuButtons.forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
-        sideMenu.classList.remove("idle");
       });
-      btn.addEventListener("focus", () => sideMenu.classList.remove("idle"));
     });
-
-    resetIdleTimer();
 
     // текущий год в футере
     document.getElementById("copy-year").textContent = new Date().getFullYear();
