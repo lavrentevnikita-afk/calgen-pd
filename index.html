@@ -105,13 +105,13 @@
     .floating-nav {
       position: fixed;
       left: 24px;
-      top: 24px;
-      width: 240px;
+      top: 86px;
+      width: 86px;
       align-self: start;
       background: var(--nav-bg);
       border: 1px solid var(--nav-border);
       border-radius: 16px;
-      padding: 14px;
+      padding: 12px 10px;
       display: flex;
       flex-direction: column;
       gap: 10px;
@@ -128,7 +128,7 @@
     }
 
     .floating-nav.compact {
-      padding: 10px 12px;
+      padding: 8px 8px;
       gap: 6px;
       transform: translateY(-4px);
       opacity: 0.92;
@@ -143,16 +143,18 @@
     .nav-list {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 8px;
       margin: 6px 0 0;
     }
 
     .nav-item {
-      display: flex;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
-      padding: 8px;
+      padding: 0;
+      width: 44px;
+      height: 44px;
       border-radius: 12px;
       color: var(--nav-text);
       text-decoration: none;
@@ -174,8 +176,8 @@
     }
 
     .nav-icon {
-      width: 26px;
-      height: 26px;
+      width: 28px;
+      height: 28px;
       border-radius: 10px;
       display: grid;
       place-items: center;
@@ -201,7 +203,7 @@
 
     .nav-label {
       position: absolute;
-      left: 46px;
+      left: calc(100% + 12px);
       padding: 6px 10px;
       background: var(--nav-bg);
       color: var(--nav-text);
@@ -210,7 +212,7 @@
       box-shadow: 0 10px 22px rgba(0, 0, 0, 0.35);
       white-space: nowrap;
       opacity: 0;
-      transform: translateX(-6px);
+      transform: translateX(-8px);
       pointer-events: none;
       transition: opacity 0.18s ease, transform 0.18s ease;
       font-weight: 600;
@@ -235,9 +237,24 @@
 
     .theme-switcher {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 6px;
       font-size: 12px;
+    }
+
+    .theme-corner {
+      position: fixed;
+      left: 16px;
+      top: 16px;
+      background: var(--nav-bg);
+      border: 1px solid var(--nav-border);
+      border-radius: 14px;
+      padding: 8px;
+      display: inline-flex;
+      gap: 8px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(10px);
+      z-index: 15;
     }
 
     .theme-button {
@@ -245,7 +262,7 @@
       border-radius: 10px;
       background: rgba(255, 255, 255, 0.03);
       color: var(--nav-text);
-      padding: 6px 8px;
+      padding: 6px 10px;
       cursor: pointer;
       transition: border 0.2s ease, color 0.2s ease,
         background 0.2s ease, transform 0.2s ease;
@@ -309,35 +326,6 @@
       --nav-accent: #ff6b4a;
       --nav-icon: rgba(255, 255, 255, 0.08);
       --nav-icon-hover: rgba(255, 255, 255, 0.14);
-      --nav-strong: #ffffff;
-    }
-
-    body[data-theme="neon"] {
-      --body-bg: radial-gradient(circle at 12% 10%, rgba(0, 255, 213, 0.28), #090a12 60%);
-      --body-text: #dcfff6;
-      --panel-bg: rgba(12, 18, 24, 0.9);
-      --panel-border: rgba(0, 255, 213, 0.3);
-      --panel-shadow: 0 18px 40px rgba(0, 255, 213, 0.18);
-      --card-bg: #0f1622;
-      --text-main: #dcfff6;
-      --text-muted: #9ad6c8;
-      --accent: #00ffd5;
-      --accent-2: #4ae7ff;
-      --weekend: #ff8a6b;
-      --hint: #7cc7b4;
-      --input-bg: #0e1824;
-      --input-border: rgba(0, 255, 213, 0.35);
-      --input-text: #dcfff6;
-      --nav-bg: radial-gradient(
-        circle at 20% 20%,
-        rgba(0, 255, 213, 0.15),
-        rgba(18, 18, 28, 0.9)
-      );
-      --nav-border: rgba(0, 255, 213, 0.35);
-      --nav-text: #b5fff6;
-      --nav-accent: #00ffd5;
-      --nav-icon: rgba(0, 255, 213, 0.16);
-      --nav-icon-hover: rgba(0, 255, 213, 0.26);
       --nav-strong: #ffffff;
     }
 
@@ -680,6 +668,10 @@
   </style>
 </head>
 <body data-theme="dark">
+  <div class="theme-corner" aria-label="Темы интерфейса">
+    <button class="theme-button active" data-theme="dark" type="button">Тёмная</button>
+    <button class="theme-button" data-theme="light" type="button">Светлая</button>
+  </div>
   <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
     <symbol id="icon-pin" viewBox="0 0 24 24">
       <path d="M12 3 8 8c-1.2 1.6-1 3.8.5 5l3.5 3-1.3 4 3.4-3.6L16 15c1.5-1.2 1.7-3.4.5-5L12 3Z" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linejoin="round" />
@@ -774,11 +766,6 @@
   <div class="layout main-layout">
     <aside class="floating-nav" id="floatingNav">
       <h2 style="margin: 0 0 6px; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--nav-text);">Навигация</h2>
-      <div class="theme-switcher" aria-label="Темы меню">
-        <button class="theme-button" data-theme="light" type="button">Светлая</button>
-        <button class="theme-button active" data-theme="dark" type="button">Тёмная</button>
-        <button class="theme-button" data-theme="neon" type="button">Неон</button>
-      </div>
       <div class="nav-list" id="navList">
         <a class="nav-item" href="#menu" data-target="menu" aria-label="Меню">
           <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" class="nav-icon-asset"><use href="#icon-pin"></use></svg></span>
@@ -856,7 +843,7 @@
           </div>
           <div class="field">
             <label>Темы</label>
-            <div class="hint">Светлая • Тёмная • Неоновая.</div>
+            <div class="hint">Светлая • Тёмная.</div>
           </div>
           <div class="field">
             <label>Иконки</label>
@@ -957,7 +944,7 @@
       <div id="themes" class="panel">
         <div class="panel-left">
           <h2 style="margin: 0;">Глобальные темы</h2>
-          <div class="hint">Минимализм, премиум-чёрная, пастельная, неоновая, бумажная.</div>
+          <div class="hint">Минимализм, премиум-чёрная, пастельная, бумажная.</div>
         </div>
       </div>
 
