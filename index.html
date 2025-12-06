@@ -5,6 +5,10 @@
   <title>CalGen PD — календарь-карточки</title>
   <style>
     :root {
+      scroll-behavior: smooth;
+    }
+
+    :root {
       --bg: #101012;
       --card-bg: #ffffff;
       --accent: #ff6b4a;
@@ -34,6 +38,21 @@
       align-items: center;
     }
 
+    .layout {
+      width: 100%;
+      max-width: 1180px;
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 24px;
+      position: relative;
+    }
+
+    @media (max-width: 1080px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
     h1 {
       margin: 0;
       font-size: 22px;
@@ -54,6 +73,85 @@
       align-items: center;
       box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
       backdrop-filter: blur(12px);
+    }
+
+    /* Левое фиксированное меню */
+
+    .floating-nav {
+      position: sticky;
+      top: 24px;
+      align-self: start;
+      background: rgba(20, 20, 28, 0.78);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: 0 18px 36px rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(10px);
+      transition: opacity 0.6s ease, transform 0.4s ease;
+      z-index: 10;
+    }
+
+    .floating-nav.idle {
+      opacity: 0.45;
+      transform: translateY(8px);
+    }
+
+    .floating-nav h2 {
+      margin: 0 0 4px;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #d7d9ee;
+    }
+
+    .nav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      color: #dfe2ff;
+      text-decoration: none;
+      font-size: 13px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid transparent;
+      transition: 0.2s ease;
+    }
+
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .nav-item.active {
+      border-color: rgba(255, 107, 74, 0.45);
+      box-shadow: 0 8px 22px rgba(255, 107, 74, 0.15);
+    }
+
+    .nav-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      background: rgba(255, 255, 255, 0.06);
+      font-size: 14px;
+    }
+
+    @media (max-width: 1080px) {
+      .floating-nav {
+        position: relative;
+        width: 100%;
+      }
     }
 
     .panel-left {
@@ -430,11 +528,231 @@
     </div>
   </div>
 
-  <div id="cards" class="cards-wrapper"></div>
+  <div class="layout">
+    <aside class="floating-nav" id="floatingNav">
+      <h2>Навигация</h2>
+      <div class="nav-list" id="navList">
+        <a class="nav-item" href="#menu" data-target="menu">
+          <span class="nav-icon">📌</span>
+          <span>Меню</span>
+        </a>
+        <a class="nav-item" href="#cards-panel" data-target="cards-panel">
+          <span class="nav-icon">🃏</span>
+          <span>Карточки</span>
+        </a>
+        <a class="nav-item" href="#interact" data-target="interact">
+          <span class="nav-icon">⌨️</span>
+          <span>Взаимодействие</span>
+        </a>
+        <a class="nav-item" href="#upload" data-target="upload">
+          <span class="nav-icon">⬆️</span>
+          <span>Загрузка</span>
+        </a>
+        <a class="nav-item" href="#images" data-target="images">
+          <span class="nav-icon">🎨</span>
+          <span>Обработка</span>
+        </a>
+        <a class="nav-item" href="#holidays" data-target="holidays">
+          <span class="nav-icon">🎉</span>
+          <span>События</span>
+        </a>
+        <a class="nav-item" href="#grid" data-target="grid">
+          <span class="nav-icon">🗓️</span>
+          <span>Сетка</span>
+        </a>
+        <a class="nav-item" href="#advanced" data-target="advanced">
+          <span class="nav-icon">🚀</span>
+          <span>Продвинутое</span>
+        </a>
+        <a class="nav-item" href="#themes" data-target="themes">
+          <span class="nav-icon">🌈</span>
+          <span>Темы</span>
+        </a>
+        <a class="nav-item" href="#typography" data-target="typography">
+          <span class="nav-icon">🅰️</span>
+          <span>Типографика</span>
+        </a>
+        <a class="nav-item" href="#palette" data-target="palette">
+          <span class="nav-icon">🎯</span>
+          <span>Цветовые схемы</span>
+        </a>
+        <a class="nav-item" href="#export" data-target="export">
+          <span class="nav-icon">📄</span>
+          <span>Экспорт</span>
+        </a>
+        <a class="nav-item" href="#print" data-target="print">
+          <span class="nav-icon">🖨️</span>
+          <span>Печать</span>
+        </a>
+      </div>
+    </aside>
+
+    <div class="cards-wrapper" id="cards"></div>
+  </div>
 
   <div class="footer-note">
     Подготовь макет → нажми <b>Ctrl+P</b> / «Печать» → выбери принтер или «Сохранить как PDF».
   </div>
+
+  <section class="layout" style="gap: 18px; align-items: flex-start;">
+    <div style="grid-column: span 2; display: grid; gap: 16px;">
+      <div id="menu" class="panel" style="background: rgba(18,18,26,0.85);">
+        <div class="panel-left">
+          <h2 style="margin: 0;">Левое фиксированное меню</h2>
+          <div class="hint">Летающее закреплённое меню с мягкой анимацией при прокрутке.</div>
+        </div>
+        <div class="panel-controls">
+          <div class="field">
+            <label>Состояние</label>
+            <div class="hint">Полупрозрачное при бездействии.</div>
+          </div>
+          <div class="field">
+            <label>Темы</label>
+            <div class="hint">Светлая • Тёмная • Неоновая.</div>
+          </div>
+          <div class="field">
+            <label>Иконки</label>
+            <div class="hint">Система иконок для быстрого перехода.</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="cards-panel" class="panel" style="background: rgba(18,18,26,0.85);">
+        <div class="panel-left">
+          <h2 style="margin: 0;">Карточки календаря</h2>
+          <div class="hint">Масштаб, макеты, рамки, плотность и Drag & Drop.</div>
+        </div>
+        <div class="panel-controls">
+          <div class="field"><label>Размеры</label><div class="hint">A6 • A5 • Кастом.</div></div>
+          <div class="field"><label>Макеты</label><div class="hint">Картинка слева/справа/сверху.</div></div>
+          <div class="field"><label>Фреймы</label><div class="hint">Круглый • Мягкий • Жёсткий.</div></div>
+          <div class="field"><label>Плотность</label><div class="hint">Компакт / Стандарт / Расширенный.</div></div>
+          <div class="field"><label>Перестановка</label><div class="hint">Drag & Drop порядок месяцев.</div></div>
+        </div>
+      </div>
+
+      <div id="interact" class="panel" style="background: rgba(18,18,26,0.85);">
+        <div class="panel-left">
+          <h2 style="margin: 0;">Взаимодействие</h2>
+          <div class="hint">Горячие клавиши, Undo/Redo и автосохранение.</div>
+        </div>
+        <div class="panel-controls">
+          <div class="field"><label>Hotkeys</label><div class="hint">Ctrl+1 — январь • Ctrl+S — сохранить • Ctrl+P — печать.</div></div>
+          <div class="field"><label>История</label><div class="hint">Undo/Redo для всех изменений.</div></div>
+          <div class="field"><label>Локально</label><div class="hint">Автосохранение и восстановление проекта.</div></div>
+          <div class="field"><label>Пресеты</label><div class="hint">Сохранение настроек оформления.</div></div>
+        </div>
+      </div>
+
+      <div id="upload" class="panel" style="background: rgba(18,18,26,0.85);">
+        <div class="panel-left">
+          <h2 style="margin: 0;">Загрузка</h2>
+          <div class="hint">Ускоренная загрузка и замена фотографий.</div>
+        </div>
+        <div class="panel-controls">
+          <div class="field"><label>ZIP → месяцы</label><div class="hint">Автораскладка 12 фото по месяцам.</div></div>
+          <div class="field"><label>Drag & Drop</label><div class="hint">Перетаскивание на карточку.</div></div>
+          <div class="field"><label>Точечная замена</label><div class="hint">Кнопка «✎ Сменить фото».</div></div>
+          <div class="field"><label>Массово</label><div class="hint">Очистка всех изображений.</div></div>
+        </div>
+      </div>
+
+      <div id="images" class="panel" style="background: rgba(18,18,26,0.85);">
+        <div class="panel-left">
+          <h2 style="margin: 0;">Обработка изображений</h2>
+          <div class="hint">Регулировки, фильтры и умный кроп.</div>
+        </div>
+        <div class="panel-controls">
+          <div class="field"><label>Регулировки</label><div class="hint">Яркость • Контраст • Насыщенность • Тепло/холод.</div></div>
+          <div class="field"><label>Фильтры</label><div class="hint">Ч/б • Пастель • Тёплый тон • Винтаж.</div></div>
+          <div class="field"><label>Кроп</label><div class="hint">Автокроп под соотношение + Smart-crop.</div></div>
+          <div class="field"><label>Ручной контроль</label><div class="hint">Crop tool, сдвиг и масштаб в контейнере.</div></div>
+        </div>
+      </div>
+
+      <div id="holidays" class="panel" style="background: rgba(18,18,26,0.85);">
+        <div class="panel-left">
+          <h2 style="margin: 0;">События и праздники</h2>
+          <div class="hint">Гос. праздники, пользовательские события и подсветки.</div>
+        </div>
+        <div class="panel-controls">
+          <div class="field"><label>Праздники</label><div class="hint">Подгрузка разных стран + названия под карточкой.</div></div>
+          <div class="field"><label>События</label><div class="hint">ДР, годовщины, подсказки значков (🎂 ⭐ ❤️).</div></div>
+          <div class="field"><label>Рабочие дни</label><div class="hint">Автоподсветка переносов.</div></div>
+        </div>
+      </div>
+
+      <div id="grid" class="panel" style="background: rgba(18,18,26,0.85);">
+        <div class="panel-left">
+          <h2 style="margin: 0;">Настройки сетки</h2>
+          <div class="hint">Форматы дат, выходные и начало недели.</div>
+        </div>
+        <div class="panel-controls">
+          <div class="field"><label>Выходные</label><div class="hint">Стилизация выходных.</div></div>
+          <div class="field"><label>Неделя</label><div class="hint">Начало недели: Пн / Вс.</div></div>
+          <div class="field"><label>Форматы</label><div class="hint">01 • 1 • 1 Янв • Январь 1 + ISO week number.</div></div>
+        </div>
+      </div>
+
+      <div id="advanced" class="panel" style="background: rgba(18,18,26,0.85);">
+        <div class="panel-left">
+          <h2 style="margin: 0;">Продвинутые фичи</h2>
+          <div class="hint">Лунные фазы, текущий день и скрытие выходных.</div>
+        </div>
+        <div class="panel-controls">
+          <div class="field"><label>Луна</label><div class="hint">Календарь по лунным фазам.</div></div>
+          <div class="field"><label>Сегодня</label><div class="hint">Автоопределение текущего дня.</div></div>
+          <div class="field"><label>Отображение</label><div class="hint">Скрывать выходные при необходимости.</div></div>
+        </div>
+      </div>
+
+      <div id="themes" class="panel" style="background: rgba(18,18,26,0.85);">
+        <div class="panel-left">
+          <h2 style="margin: 0;">Глобальные темы</h2>
+          <div class="hint">Минимализм, премиум-чёрная, пастельная, неоновая, бумажная.</div>
+        </div>
+      </div>
+
+      <div id="typography" class="panel" style="background: rgba(18,18,26,0.85);">
+        <div class="panel-left">
+          <h2 style="margin: 0;">Типографика</h2>
+          <div class="hint">Google Fonts, размеры и толщина, сглаживание/резкость.</div>
+        </div>
+      </div>
+
+      <div id="palette" class="panel" style="background: rgba(18,18,26,0.85);">
+        <div class="panel-left">
+          <h2 style="margin: 0;">Цветовые схемы</h2>
+          <div class="hint">Акцентный цвет, палитра из изображения, сезонные наборы.</div>
+        </div>
+      </div>
+
+      <div id="export" class="panel" style="background: rgba(18,18,26,0.85);">
+        <div class="panel-left">
+          <h2 style="margin: 0;">Экспорт</h2>
+          <div class="hint">PDF, PNG, SVG и рендер в 300 DPI.</div>
+        </div>
+        <div class="panel-controls">
+          <div class="field"><label>PDF</label><div class="hint">Все месяцы единым файлом или каждый отдельно.</div></div>
+          <div class="field"><label>PNG</label><div class="hint">Наборы изображений в ZIP.</div></div>
+          <div class="field"><label>SVG</label><div class="hint">Для типографий.</div></div>
+          <div class="field"><label>Качество</label><div class="hint">Рендер 300 DPI.</div></div>
+        </div>
+      </div>
+
+      <div id="print" class="panel" style="background: rgba(18,18,26,0.85);">
+        <div class="panel-left">
+          <h2 style="margin: 0;">Печать</h2>
+          <div class="hint">Метки обреза, поля, выравнивание и режимы PDF.</div>
+        </div>
+        <div class="panel-controls">
+          <div class="field"><label>Crop marks</label><div class="hint">Метки обреза и контроль полей.</div></div>
+          <div class="field"><label>Выравнивание</label><div class="hint">Принудительное выравнивание изображения.</div></div>
+          <div class="field"><label>PDF</label><div class="hint">Для дома и для типографии.</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <footer class="app-footer">
     <div class="footer-inner">
@@ -677,6 +995,45 @@
 
     yearInput.addEventListener("input", renderCards);
     holidaysInput.addEventListener("input", renderCards);
+
+    // Навигация с подсветкой секций
+    const floatingNav = document.getElementById("floatingNav");
+    const navLinks = Array.from(document.querySelectorAll(".nav-item"));
+    const navSections = navLinks
+      .map(link => ({ link, section: document.getElementById(link.dataset.target) }))
+      .filter(entry => entry.section);
+
+    function setActiveNav() {
+      const offset = window.scrollY + 120;
+      let current = navSections[0];
+
+      for (const entry of navSections) {
+        const top = entry.section.offsetTop;
+        if (top <= offset) current = entry;
+      }
+
+      navLinks.forEach(l => l.classList.remove("active"));
+      if (current) current.link.classList.add("active");
+    }
+
+    let idleTimer;
+    function resetIdleState() {
+      floatingNav.classList.remove("idle");
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => floatingNav.classList.add("idle"), 2000);
+    }
+
+    window.addEventListener("scroll", () => {
+      setActiveNav();
+      resetIdleState();
+    });
+
+    ["mousemove", "touchstart", "keydown"].forEach(evt => {
+      window.addEventListener(evt, resetIdleState);
+    });
+
+    resetIdleState();
+    setActiveNav();
 
     // текущий год в футере
     document.getElementById("copy-year").textContent = new Date().getFullYear();
