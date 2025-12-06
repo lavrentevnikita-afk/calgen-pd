@@ -287,15 +287,46 @@
       color: #8888a4;
     }
 
-    /* ---------- КАРТОЧКИ КАЛЕНДАРЯ: пока обычная сетка ---------- */
+    /* ---------- КАРТОЧКИ КАЛЕНДАРЯ: сезонная сетка 4×3 ---------- */
 
     .cards-wrapper {
       width: 100%;
-      max-width: 1120px;
-      display: grid;
+      max-width: 1160px;
+      display: flex;
+      flex-direction: column;
       gap: 18px;
-      justify-content: center;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 680px));
+    }
+
+    .season-section {
+      background: rgba(10, 10, 16, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 18px;
+      padding: 12px 14px 16px;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+    }
+
+    .season-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 2px 6px 10px;
+      font-weight: 600;
+      color: #f5f5ff;
+      letter-spacing: 0.05em;
+    }
+
+    .season-name {
+      padding: 6px 12px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 14px;
+    }
+
+    .season-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 14px;
     }
 
     .card {
@@ -959,6 +990,12 @@
       "ИЮЛЬ", "АВГУСТ", "СЕНТЯБРЬ", "ОКТЯБРЬ", "НОЯБРЬ", "ДЕКАБРЬ"
     ];
     const weekdayNames = ["ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"];
+    const seasons = [
+      { label: "❄ Зима", months: [0, 1, 2] },
+      { label: "🌸 Весна", months: [3, 4, 5] },
+      { label: "☀ Лето", months: [6, 7, 8] },
+      { label: "🍂 Осень", months: [9, 10, 11] }
+    ];
 
     const yearInput = document.getElementById("year");
     const imagesInput = document.getElementById("images");
@@ -1021,145 +1058,164 @@
 
       cardsContainer.innerHTML = "";
 
-      for (let month = 0; month < 12; month++) {
-        const card = document.createElement("div");
-        card.className = "card";
-
-        const imageDiv = document.createElement("div");
-        imageDiv.className = "card-image";
-
-        const imgUrl = imageData[month];
-        if (imgUrl) {
-          imageDiv.style.backgroundImage = `url('${imgUrl}')`;
-        } else {
-          imageDiv.style.background =
-            "linear-gradient(135deg, #ffe6c4, #e2f1ff)";
-        }
-
-        const overlay = document.createElement("div");
-        overlay.className = "image-overlay";
-        overlay.dataset.month = month;
-        overlay.innerHTML = '<span>✎</span> Сменить фото';
-
-        const hiddenInput = document.createElement("input");
-        hiddenInput.type = "file";
-        hiddenInput.accept = "image/*";
-        hiddenInput.style.display = "none";
-        hiddenInput.dataset.month = month;
-
-        overlay.addEventListener("click", () => hiddenInput.click());
-
-        hiddenInput.addEventListener("change", (e) => {
-          const file = e.target.files[0];
-          if (!file) return;
-          const reader = new FileReader();
-          const mIndex = parseInt(e.target.dataset.month, 10);
-          reader.onload = (ev) => {
-            imageData[mIndex] = ev.target.result;
-            renderCards();
-          };
-          reader.readAsDataURL(file);
-        });
-
-        imageDiv.appendChild(overlay);
-        imageDiv.appendChild(hiddenInput);
-
-        const calDiv = document.createElement("div");
-        calDiv.className = "card-calendar";
+      seasons.forEach(season => {
+        const section = document.createElement("section");
+        section.className = "season-section";
 
         const header = document.createElement("div");
-        header.className = "month-header";
-        const nameSpan = document.createElement("div");
-        nameSpan.className = "month-name";
-        nameSpan.textContent = monthNames[month];
-        const yearSpan = document.createElement("div");
-        yearSpan.className = "month-year";
-        yearSpan.textContent = year;
-        header.appendChild(nameSpan);
-        header.appendChild(yearSpan);
+        header.className = "season-header";
+        const name = document.createElement("div");
+        name.className = "season-name";
+        name.textContent = season.label;
+        header.appendChild(name);
+        section.appendChild(header);
 
-        const dowRow = document.createElement("div");
-        dowRow.className = "dow-row";
-        weekdayNames.forEach((name, idx) => {
-          const d = document.createElement("div");
-          d.className = "dow" + (idx >= 5 ? " weekend" : "");
-          d.textContent = name;
-          dowRow.appendChild(d);
-        });
+        const grid = document.createElement("div");
+        grid.className = "season-grid";
 
-        const daysGrid = document.createElement("div");
-        daysGrid.className = "days-grid";
+        season.months.forEach(month => {
+          const card = document.createElement("div");
+          card.className = "card";
 
-        const cells = getMonthMatrix(year, month);
-        const monthIndex = month + 1;
+          const imageDiv = document.createElement("div");
+          imageDiv.className = "card-image";
 
-        for (const val of cells) {
-          const cell = document.createElement("div");
-          cell.className = "day-cell";
-
-          if (val === null) {
-            cell.classList.add("empty");
+          const imgUrl = imageData[month];
+          if (imgUrl) {
+            imageDiv.style.backgroundImage = `url('${imgUrl}')`;
           } else {
-            cell.textContent = val;
-
-            const dStr = String(val).padStart(2, "0");
-            const mStr = String(monthIndex).padStart(2, "0");
-            const isHol = dateSet.has(`${dStr}.${mStr}`);
-            const isWend = isWeekend(year, month, val);
-
-            if (isWend) cell.classList.add("weekend");
-            if (isHol) cell.classList.add("holiday");
-
-            const key = `${year}-${month}-${val}`;
-            if (key === todayKey) {
-              cell.classList.add("today");
-            }
+            imageDiv.style.background =
+              "linear-gradient(135deg, #ffe6c4, #e2f1ff)";
           }
 
-          daysGrid.appendChild(cell);
-        }
+          const overlay = document.createElement("div");
+          overlay.className = "image-overlay";
+          overlay.dataset.month = month;
+          overlay.innerHTML = '<span>✎</span> Сменить фото';
 
-        const legend = document.createElement("div");
-        legend.className = "legend";
-        const l1 = document.createElement("div");
-        l1.className = "legend-item";
-        l1.innerHTML = '<span class="legend-dot weekend"></span>выходные';
-        const l2 = document.createElement("div");
-        l2.className = "legend-item";
-        l2.innerHTML = '<span class="legend-dot holiday"></span>праздники';
-        legend.appendChild(l1);
-        legend.appendChild(l2);
+          const hiddenInput = document.createElement("input");
+          hiddenInput.type = "file";
+          hiddenInput.accept = "image/*";
+          hiddenInput.style.display = "none";
+          hiddenInput.dataset.month = month;
 
-        const holidayListDiv = document.createElement("div");
-        holidayListDiv.className = "holiday-list";
-        const monthKey = String(monthIndex).padStart(2, "0");
-        const monthHolidays = byMonth[monthKey] || [];
+          overlay.addEventListener("click", () => hiddenInput.click());
 
-        if (monthHolidays.length) {
-          const title = document.createElement("div");
-          title.className = "holiday-list-title";
-          title.textContent = "Праздники:";
-          holidayListDiv.appendChild(title);
-
-          monthHolidays.forEach(h => {
-            const item = document.createElement("div");
-            item.className = "holiday-item";
-            const namePart = h.label ? ` — ${h.label}` : "";
-            item.textContent = `${h.day}.${monthKey}${namePart}`;
-            holidayListDiv.appendChild(item);
+          hiddenInput.addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            const mIndex = parseInt(e.target.dataset.month, 10);
+            reader.onload = (ev) => {
+              imageData[mIndex] = ev.target.result;
+              renderCards();
+            };
+            reader.readAsDataURL(file);
           });
-        }
 
-        calDiv.appendChild(header);
-        calDiv.appendChild(dowRow);
-        calDiv.appendChild(daysGrid);
-        calDiv.appendChild(legend);
-        calDiv.appendChild(holidayListDiv);
+          imageDiv.appendChild(overlay);
+          imageDiv.appendChild(hiddenInput);
 
-        card.appendChild(imageDiv);
-        card.appendChild(calDiv);
-        cardsContainer.appendChild(card);
-      }
+          const calDiv = document.createElement("div");
+          calDiv.className = "card-calendar";
+
+          const header = document.createElement("div");
+          header.className = "month-header";
+          const nameSpan = document.createElement("div");
+          nameSpan.className = "month-name";
+          nameSpan.textContent = monthNames[month];
+          const yearSpan = document.createElement("div");
+          yearSpan.className = "month-year";
+          yearSpan.textContent = year;
+          header.appendChild(nameSpan);
+          header.appendChild(yearSpan);
+
+          const dowRow = document.createElement("div");
+          dowRow.className = "dow-row";
+          weekdayNames.forEach((name, idx) => {
+            const d = document.createElement("div");
+            d.className = "dow" + (idx >= 5 ? " weekend" : "");
+            d.textContent = name;
+            dowRow.appendChild(d);
+          });
+
+          const daysGrid = document.createElement("div");
+          daysGrid.className = "days-grid";
+
+          const cells = getMonthMatrix(year, month);
+          const monthIndex = month + 1;
+
+          for (const val of cells) {
+            const cell = document.createElement("div");
+            cell.className = "day-cell";
+
+            if (val === null) {
+              cell.classList.add("empty");
+            } else {
+              cell.textContent = val;
+
+              const dStr = String(val).padStart(2, "0");
+              const mStr = String(monthIndex).padStart(2, "0");
+              const isHol = dateSet.has(`${dStr}.${mStr}`);
+              const isWend = isWeekend(year, month, val);
+
+              if (isWend) cell.classList.add("weekend");
+              if (isHol) cell.classList.add("holiday");
+
+              const key = `${year}-${month}-${val}`;
+              if (key === todayKey) {
+                cell.classList.add("today");
+              }
+            }
+
+            daysGrid.appendChild(cell);
+          }
+
+          const legend = document.createElement("div");
+          legend.className = "legend";
+          const l1 = document.createElement("div");
+          l1.className = "legend-item";
+          l1.innerHTML = '<span class="legend-dot weekend"></span>выходные';
+          const l2 = document.createElement("div");
+          l2.className = "legend-item";
+          l2.innerHTML = '<span class="legend-dot holiday"></span>праздники';
+          legend.appendChild(l1);
+          legend.appendChild(l2);
+
+          const holidayListDiv = document.createElement("div");
+          holidayListDiv.className = "holiday-list";
+          const monthKey = String(monthIndex).padStart(2, "0");
+          const monthHolidays = byMonth[monthKey] || [];
+
+          if (monthHolidays.length) {
+            const title = document.createElement("div");
+            title.className = "holiday-list-title";
+            title.textContent = "Праздники:";
+            holidayListDiv.appendChild(title);
+
+            monthHolidays.forEach(h => {
+              const item = document.createElement("div");
+              item.className = "holiday-item";
+              const namePart = h.label ? ` — ${h.label}` : "";
+              item.textContent = `${h.day}.${monthKey}${namePart}`;
+              holidayListDiv.appendChild(item);
+            });
+          }
+
+          calDiv.appendChild(header);
+          calDiv.appendChild(dowRow);
+          calDiv.appendChild(daysGrid);
+          calDiv.appendChild(legend);
+          calDiv.appendChild(holidayListDiv);
+
+          card.appendChild(imageDiv);
+          card.appendChild(calDiv);
+          grid.appendChild(card);
+        });
+
+        section.appendChild(grid);
+        cardsContainer.appendChild(section);
+      });
     }
 
     imagesInput.addEventListener("change", () => {
