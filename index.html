@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>CalGen PD — календарь-карточки</title>
+  <title>CalGen PD — генератор календарей</title>
   <style>
     :root {
       --bg: #101012;
@@ -13,6 +13,15 @@
       --text-muted: #777777;
       --weekend: #e53935;
       --radius: 24px;
+
+      --menu-bg: #12131c;
+      --menu-border: rgba(255, 255, 255, 0.08);
+      --menu-shadow: rgba(0, 0, 0, 0.45);
+      --menu-text: #d9dbee;
+      --menu-muted: #7f82a5;
+      --menu-accent: #ff7b50;
+      --menu-hover: rgba(255, 255, 255, 0.06);
+      --menu-active-glow: rgba(255, 123, 80, 0.25);
     }
 
     * {
@@ -40,6 +49,174 @@
       letter-spacing: 0.04em;
     }
 
+    /* ---------- ЭКРАН ВЫБОРА МАКЕТА ---------- */
+
+    .layout-picker {
+      position: fixed;
+      inset: 0;
+      padding: 32px 24px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+      background: radial-gradient(circle at top, #2b2b3e, #050509);
+      z-index: 50;
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .layout-picker.hidden {
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+    }
+
+    .layout-title {
+      font-size: 24px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #f7f7ff;
+    }
+
+    .layout-subtitle {
+      font-size: 13px;
+      color: #a7a8c3;
+      max-width: 480px;
+      text-align: center;
+    }
+
+    .layout-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 260px));
+      gap: 18px;
+      align-items: stretch;
+      justify-content: center;
+      width: 100%;
+      max-width: 880px;
+    }
+
+    .layout-card {
+      position: relative;
+      padding: 16px 16px 18px;
+      border-radius: 20px;
+      background: rgba(8, 8, 16, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.65);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: transform 0.25s ease, box-shadow 0.25s ease,
+        border-color 0.25s ease, background 0.25s ease;
+    }
+
+    .layout-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 24px 50px rgba(0, 0, 0, 0.85);
+      border-color: rgba(255, 255, 255, 0.12);
+      background: radial-gradient(circle at top, #1e1f2b, #070711);
+    }
+
+    .layout-card.main {
+      border-color: rgba(255, 123, 80, 0.45);
+    }
+
+    .layout-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .layout-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 12px;
+      background: radial-gradient(circle at 30% 0%, #ffb89c, #ff6b4a);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #120d0b;
+      box-shadow: 0 8px 20px rgba(255, 107, 74, 0.6);
+      flex-shrink: 0;
+    }
+
+    .layout-icon svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.7;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .layout-title-text {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .layout-desc {
+      font-size: 12px;
+      color: #a7a8c3;
+      line-height: 1.4;
+    }
+
+    .layout-tag {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #fbe2d7;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(255, 123, 80, 0.18);
+      align-self: flex-start;
+    }
+
+    .layout-card.disabled {
+      cursor: default;
+      opacity: 0.55;
+    }
+
+    .layout-card.disabled:hover {
+      transform: none;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.65);
+      border-color: rgba(255, 255, 255, 0.06);
+      background: rgba(8, 8, 16, 0.92);
+    }
+
+    .badge-soon {
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      padding: 3px 7px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      color: #c5c6dd;
+    }
+
+    /* ---------- ОБЩИЙ КОНТЕЙНЕР ПРИЛОЖЕНИЯ ---------- */
+
+    .app-root {
+      width: 100%;
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .app-root.visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
     /* Панель настроек */
 
     .panel {
@@ -54,6 +231,7 @@
       align-items: center;
       box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
       backdrop-filter: blur(12px);
+      margin-top: 8px;
     }
 
     .panel-left {
@@ -82,7 +260,8 @@
     }
 
     input[type="number"],
-    textarea {
+    textarea,
+    select {
       padding: 6px 10px;
       border-radius: 10px;
       border: 1px solid #343449;
@@ -108,7 +287,7 @@
       color: #8888a4;
     }
 
-    /* Карточки */
+    /* ---------- КАРТОЧКИ КАЛЕНДАРЯ: пока обычная сетка ---------- */
 
     .cards-wrapper {
       width: 100%;
@@ -366,25 +545,166 @@
       opacity: 0.7;
     }
 
+    /* Левое плавающее меню */
+
+    body[data-menu-theme="light"] {
+      --menu-bg: #f4f5fb;
+      --menu-border: rgba(0, 0, 0, 0.06);
+      --menu-shadow: rgba(0, 0, 0, 0.15);
+      --menu-text: #1f2430;
+      --menu-muted: #64718a;
+      --menu-accent: #2d7dff;
+      --menu-hover: rgba(0, 0, 0, 0.04);
+      --menu-active-glow: rgba(45, 125, 255, 0.2);
+    }
+
+    body[data-menu-theme="neon"] {
+      --menu-bg: #070710;
+      --menu-border: rgba(98, 255, 210, 0.18);
+      --menu-shadow: rgba(12, 250, 195, 0.18);
+      --menu-text: #c5fff2;
+      --menu-muted: #6fead1;
+      --menu-accent: #5df2c3;
+      --menu-hover: rgba(93, 242, 195, 0.1);
+      --menu-active-glow: rgba(93, 242, 195, 0.28);
+    }
+
+    .side-menu {
+      position: fixed;
+      left: 20px;
+      top: 50%;
+      width: 72px;
+      padding: 14px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      transform: translateY(-50%);
+      background: var(--menu-bg);
+      border: 1px solid var(--menu-border);
+      box-shadow: 0 18px 40px var(--menu-shadow);
+      border-radius: 24px;
+      z-index: 10;
+    }
+
+    .menu-items {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 4px 0;
+    }
+
+    .menu-item {
+      position: relative;
+      list-style: none;
+    }
+
+    .menu-button {
+      width: 52px;
+      height: 52px;
+      border-radius: 18px;
+      border: 1px solid var(--menu-border);
+      background: transparent;
+      color: var(--menu-text);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.28s ease-out;
+      padding: 0;
+    }
+
+    .menu-button:hover {
+      background: var(--menu-hover);
+      color: var(--menu-accent);
+      transform: translateY(-1px);
+    }
+
+    .menu-button:active {
+      transform: translateY(0);
+      box-shadow: inset 0 0 0 1px var(--menu-border);
+    }
+
+    .menu-button.active {
+      color: var(--menu-accent);
+      box-shadow: 0 0 0 2px var(--menu-active-glow);
+      background: radial-gradient(circle at 50% 50%, var(--menu-hover), transparent 70%);
+    }
+
+    .menu-icon {
+      width: 22px;
+      height: 22px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .menu-label {
+      position: absolute;
+      left: 68px;
+      top: 50%;
+      transform: translateY(-50%);
+      padding: 8px 12px;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.72);
+      color: #f5f5f5;
+      font-size: 13px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    body[data-menu-theme="light"] .menu-label {
+      background: rgba(35, 38, 49, 0.9);
+    }
+
+    body[data-menu-theme="neon"] .menu-label {
+      background: rgba(7, 7, 16, 0.92);
+      color: #baffec;
+      box-shadow: 0 12px 32px rgba(93, 242, 195, 0.22);
+    }
+
+    .menu-button:hover + .menu-label,
+    .menu-button:focus + .menu-label {
+      opacity: 1;
+      transform: translate(8px, -50%);
+    }
+
+    .menu-footer-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--menu-accent);
+      box-shadow: 0 0 0 6px var(--menu-active-glow);
+      transition: all 0.28s ease-out;
+    }
+
     @media print {
       body {
         background: #ffffff;
         padding: 10mm;
       }
-
+      .layout-picker {
+        display: none;
+      }
+      .side-menu {
+        display: none;
+      }
       .panel {
         display: none;
       }
-
       .cards-wrapper {
         box-shadow: none;
       }
-
       .card {
         box-shadow: none;
         page-break-inside: avoid;
       }
-
       .footer-note,
       .image-overlay,
       .app-footer {
@@ -394,29 +714,192 @@
   </style>
 </head>
 <body>
-  <div class="panel">
-    <div class="panel-left">
-      <h1>Календарь-карточки</h1>
-      <div class="hint">
-        1) Выбери год • 2) Загрузите до 12 фото (в порядке с января) • 3) Печатайте из браузера.
-      </div>
+
+  <!-- ЭКРАН ВЫБОРА МАКЕТА -->
+  <section id="layout-picker" class="layout-picker">
+    <div class="layout-title">Выберите тип календаря</div>
+    <div class="layout-subtitle">
+      Начните с макета. Пока доступен подробный генератор календаря-карточек,
+      остальные шаблоны появятся позже.
     </div>
+    <div class="layout-grid">
+      <!-- Календарь-карточки -->
+      <article class="layout-card main" data-template="cards">
+        <div class="layout-card-header">
+          <div class="layout-icon">
+            <svg viewBox="0 0 24 24">
+              <rect x="3.5" y="5" width="17" height="15" rx="3"></rect>
+              <path d="M8 3v4"></path>
+              <path d="M16 3v4"></path>
+              <path d="M3.5 10h17"></path>
+            </svg>
+          </div>
+          <div>
+            <div class="layout-title-text">Календарь-карточки</div>
+            <div class="layout-desc">12 отдельных карточек с фото и
+              календарём — идеально для подставки на стол.</div>
+          </div>
+        </div>
+        <span class="layout-tag">Рекомендуется</span>
+      </article>
 
-    <div class="panel-controls">
-      <div class="field">
-        <label for="year">Год</label>
-        <input id="year" type="number" value="2025" min="2000" max="2100">
+      <!-- Календарь-магнит -->
+      <article class="layout-card disabled">
+        <span class="badge-soon">Скоро</span>
+        <div class="layout-card-header">
+          <div class="layout-icon">
+            <svg viewBox="0 0 24 24">
+              <path d="M7 3h4v9a3 3 0 0 1-6 0V7a4 4 0 0 1 4-4z"></path>
+              <path d="M13 3h4a4 4 0 0 1 4 4v5a3 3 0 0 1-6 0V3z"></path>
+            </svg>
+          </div>
+          <div>
+            <div class="layout-title-text">Календарь-магнит</div>
+            <div class="layout-desc">Компактный календарь на холодильник
+              с крупными датами и зоной заметок.</div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Квартальный календарь -->
+      <article class="layout-card disabled">
+        <span class="badge-soon">Скоро</span>
+        <div class="layout-card-header">
+          <div class="layout-icon">
+            <svg viewBox="0 0 24 24">
+              <rect x="3" y="3" width="18" height="5" rx="1.5"></rect>
+              <rect x="3" y="9.5" width="18" height="5" rx="1.5"></rect>
+              <rect x="3" y="16" width="18" height="5" rx="1.5"></rect>
+            </svg>
+          </div>
+          <div>
+            <div class="layout-title-text">Квартальный</div>
+            <div class="layout-desc">Три месяца на одном листе с бегунком и
+              выделением текущего дня.</div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ОСНОВНОЕ ПРИЛОЖЕНИЕ -->
+  <div id="app-root" class="app-root">
+    <!-- Левое меню -->
+    <nav class="side-menu" aria-label="Навигация по настройкам">
+      <ul class="menu-items">
+        <li class="menu-item">
+          <button class="menu-button active" type="button" data-section="calendar">
+            <svg class="menu-icon" viewBox="0 0 24 24">
+              <path d="M7 3v3"></path>
+              <path d="M17 3v3"></path>
+              <rect x="4" y="5" width="16" height="15" rx="3"></rect>
+              <path d="M4 10h16"></path>
+            </svg>
+          </button>
+          <div class="menu-label">Календарь</div>
+        </li>
+        <li class="menu-item">
+          <button class="menu-button" type="button" data-section="images">
+            <svg class="menu-icon" viewBox="0 0 24 24">
+              <rect x="4" y="5" width="16" height="14" rx="2"></rect>
+              <path d="M8 13l3-3 4 5 2-2 3 4"></path>
+              <circle cx="9" cy="9" r="1.6"></circle>
+            </svg>
+          </button>
+          <div class="menu-label">Изображения</div>
+        </li>
+        <li class="menu-item">
+          <button class="menu-button" type="button" data-section="holidays">
+            <svg class="menu-icon" viewBox="0 0 24 24">
+              <path d="M5 20V5a2 2 0 0 1 2-2h7l5 5v12"></path>
+              <path d="M14 3v5h5"></path>
+              <path d="M9 13h5"></path>
+              <path d="M9 17h3"></path>
+              <circle cx="17" cy="10" r="1.7"></circle>
+            </svg>
+          </button>
+          <div class="menu-label">Праздники</div>
+        </li>
+        <li class="menu-item">
+          <button class="menu-button" type="button" data-section="grid">
+            <svg class="menu-icon" viewBox="0 0 24 24">
+              <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+              <path d="M4 10h16"></path>
+              <path d="M4 14h16"></path>
+              <path d="M10 4v16"></path>
+              <path d="M14 4v16"></path>
+            </svg>
+          </button>
+          <div class="menu-label">Сетка</div>
+        </li>
+        <li class="menu-item">
+          <button class="menu-button" type="button" data-section="style">
+            <svg class="menu-icon" viewBox="0 0 24 24">
+              <path d="M4 19h16"></path>
+              <path d="M7 19V5a2 2 0 0 1 2-2h3l5 5v11"></path>
+              <path d="M14 3v4h4"></path>
+              <path d="M9 13h3"></path>
+            </svg>
+          </button>
+          <div class="menu-label">Оформление</div>
+        </li>
+        <li class="menu-item">
+          <button class="menu-button" type="button" data-section="export">
+            <svg class="menu-icon" viewBox="0 0 24 24">
+              <path d="M12 3v12"></path>
+              <path d="M8.5 8.5L12 5l3.5 3.5"></path>
+              <rect x="5" y="15" width="14" height="5" rx="2"></rect>
+            </svg>
+          </button>
+          <div class="menu-label">Экспорт</div>
+        </li>
+        <li class="menu-item">
+          <button class="menu-button" type="button" data-section="help">
+            <svg class="menu-icon" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="9"></circle>
+              <path d="M9.5 9.5a2.5 2.5 0 0 1 4.4-1.5 2.3 2.3 0 0 1-.9 3.2l-1 .6v1.2"></path>
+              <circle cx="12" cy="17" r="0.8"></circle>
+            </svg>
+          </button>
+          <div class="menu-label">Справка</div>
+        </li>
+      </ul>
+      <div class="menu-footer-dot" aria-hidden="true"></div>
+    </nav>
+
+    <!-- Панель настроек -->
+    <div class="panel">
+      <div class="panel-left">
+        <h1>Календарь-карточки</h1>
+        <div class="hint">
+          1) Выбери год • 2) Загрузите до 12 фото (в порядке с января) • 3) Печатайте из браузера.
+        </div>
       </div>
 
-      <div class="field">
-        <label for="images">Изображения (до 12 шт., множественный выбор)</label>
-        <input id="images" type="file" accept="image/*" multiple>
-        <div class="hint">Файл №1 — январь, №2 — февраль, ... №12 — декабрь.</div>
-      </div>
+      <div class="panel-controls">
+        <div class="field" data-section-panel="calendar">
+          <label for="year">Год</label>
+          <input id="year" type="number" value="2025" min="2000" max="2100">
+        </div>
 
-      <div class="field">
-        <label for="holidays">Праздники (формат: DD.MM Название)</label>
-        <textarea id="holidays">
+        <div class="field" data-section-panel="style">
+          <label for="menu-theme">Тема меню</label>
+          <select id="menu-theme">
+            <option value="dark" selected>Тёмная</option>
+            <option value="light">Светлая</option>
+            <option value="neon">Неоновая</option>
+          </select>
+        </div>
+
+        <div class="field" data-section-panel="images">
+          <label for="images">Изображения (до 12 шт., множественный выбор)</label>
+          <input id="images" type="file" accept="image/*" multiple>
+          <div class="hint">Файл №1 — январь, №2 — февраль, ... №12 — декабрь.</div>
+        </div>
+
+        <div class="field" data-section-panel="holidays">
+          <label for="holidays">Праздники (формат: DD.MM Название)</label>
+          <textarea id="holidays">
 01.01 Новый год
 07.01 Рождество Христово
 23.02 День защитника Отечества
@@ -425,32 +908,52 @@
 09.05 День Победы
 12.06 День России
 04.11 День народного единства</textarea>
-        <div class="hint">Каждый праздник с новой строки: дата + пробел + название.</div>
+          <div class="hint">Каждый праздник с новой строки: дата + пробел + название.</div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div id="cards" class="cards-wrapper"></div>
+    <div id="cards" class="cards-wrapper"></div>
 
-  <div class="footer-note">
-    Подготовь макет → нажми <b>Ctrl+P</b> / «Печать» → выбери принтер или «Сохранить как PDF».
-  </div>
-
-  <footer class="app-footer">
-    <div class="footer-inner">
-      <div class="footer-title">CalGen PD</div>
-      <div class="footer-links">
-        <a href="https://github.com/lavrentevnikita-afk/calgen-pd" target="_blank" rel="noopener noreferrer">
-          GitHub проекта
-        </a>
-      </div>
-      <div class="footer-copy">
-        © <span id="copy-year"></span> — генератор календарей-карточек
-      </div>
+    <div class="footer-note">
+      Подготовь макет → нажми <b>Ctrl+P</b> / «Печать» → выбери принтер или «Сохранить как PDF».
     </div>
-  </footer>
+
+    <footer class="app-footer">
+      <div class="footer-inner">
+        <div class="footer-title">CalGen PD</div>
+        <div class="footer-links">
+          <a href="https://github.com/lavrentevnikita-afk/calgen-pd" target="_blank" rel="noopener noreferrer">
+            GitHub проекта
+          </a>
+        </div>
+        <div class="footer-copy">
+          © <span id="copy-year"></span> — генератор календарей-карточек
+        </div>
+      </div>
+    </footer>
+  </div>
 
   <script>
+    // ---------- ЛОГИКА ВЫБОРА МАКЕТА ----------
+    const layoutPicker = document.getElementById("layout-picker");
+    const appRoot = document.getElementById("app-root");
+    const layoutCards = Array.from(document.querySelectorAll(".layout-card[data-template]"));
+
+    function openLayout(template) {
+      if (template !== "cards") return;
+      layoutPicker.classList.add("hidden");
+      appRoot.classList.add("visible");
+    }
+
+    layoutCards.forEach(card => {
+      card.addEventListener("click", () => {
+        const tmpl = card.getAttribute("data-template");
+        openLayout(tmpl);
+      });
+    });
+
+    // ---------- СТАРЫЙ КАЛЕНДАРЬ (как был) ----------
     const monthNames = [
       "ЯНВАРЬ", "ФЕВРАЛЬ", "МАРТ", "АПРЕЛЬ", "МАЙ", "ИЮНЬ",
       "ИЮЛЬ", "АВГУСТ", "СЕНТЯБРЬ", "ОКТЯБРЬ", "НОЯБРЬ", "ДЕКАБРЬ"
@@ -460,9 +963,10 @@
     const yearInput = document.getElementById("year");
     const imagesInput = document.getElementById("images");
     const holidaysInput = document.getElementById("holidays");
+    const menuThemeSelect = document.getElementById("menu-theme");
+    const menuButtons = Array.from(document.querySelectorAll(".menu-button"));
     const cardsContainer = document.getElementById("cards");
 
-    // dataURL для каждого месяца (0–11)
     const imageData = new Array(12).fill(null);
 
     function parseHolidays() {
@@ -486,7 +990,6 @@
         byMonth[mm].push({ day: d, label });
       }
 
-      // сортировка по дате внутри месяца
       Object.keys(byMonth).forEach(mm => {
         byMonth[mm].sort((a, b) => parseInt(a.day, 10) - parseInt(b.day, 10));
       });
@@ -496,8 +999,8 @@
 
     function getMonthMatrix(year, month) {
       const daysInMonth = new Date(year, month + 1, 0).getDate();
-      const firstDayJS = new Date(year, month, 1).getDay(); // 0 = Sun
-      const firstDay = (firstDayJS + 6) % 7; // 0 = Mon
+      const firstDayJS = new Date(year, month, 1).getDay();
+      const firstDay = (firstDayJS + 6) % 7; // понедельник как 0
 
       const cells = [];
       for (let i = 0; i < firstDay; i++) cells.push(null);
@@ -522,7 +1025,6 @@
         const card = document.createElement("div");
         card.className = "card";
 
-        /* Картинка */
         const imageDiv = document.createElement("div");
         imageDiv.className = "card-image";
 
@@ -562,7 +1064,6 @@
         imageDiv.appendChild(overlay);
         imageDiv.appendChild(hiddenInput);
 
-        /* Календарь */
         const calDiv = document.createElement("div");
         calDiv.className = "card-calendar";
 
@@ -661,12 +1162,11 @@
       }
     }
 
-    // множественная загрузка 12 картинок
     imagesInput.addEventListener("change", () => {
       const files = Array.from(imagesInput.files || []).slice(0, 12);
       files.forEach((file, idx) => {
         const reader = new FileReader();
-        const monthIndex = idx; // 0=январь
+        const monthIndex = idx;
         reader.onload = e => {
           imageData[monthIndex] = e.target.result;
           renderCards();
@@ -678,10 +1178,36 @@
     yearInput.addEventListener("input", renderCards);
     holidaysInput.addEventListener("input", renderCards);
 
-    // текущий год в футере
+    function applyMenuTheme(theme) {
+      const value = ["dark", "light", "neon"].includes(theme) ? theme : "dark";
+      document.body.setAttribute("data-menu-theme", value);
+    }
+
+    applyMenuTheme(menuThemeSelect.value);
+    menuThemeSelect.addEventListener("change", () => applyMenuTheme(menuThemeSelect.value));
+
+    menuButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        menuButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        const section = btn.dataset.section;
+        const panels = document.querySelectorAll("[data-section-panel]");
+        panels.forEach(p => {
+          if (p.dataset.sectionPanel === section) {
+            p.style.outline = "1px solid rgba(255,255,255,0.3)";
+            p.style.borderRadius = "10px";
+            setTimeout(() => {
+              p.style.outline = "none";
+            }, 600);
+          }
+        });
+      });
+    });
+
     document.getElementById("copy-year").textContent = new Date().getFullYear();
 
-    // стартовый рендер
+    // стартовый рендер (когда пользователь уже выберет макет)
     renderCards();
   </script>
 </body>
