@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Генератор календаря-карточек</title>
+  <title>CalGen PD — календарь-карточки</title>
   <style>
     :root {
       --bg: #101012;
@@ -39,6 +39,8 @@
       font-size: 22px;
       letter-spacing: 0.04em;
     }
+
+    /* Панель настроек */
 
     .panel {
       width: 100%;
@@ -105,6 +107,8 @@
       font-size: 11px;
       color: #8888a4;
     }
+
+    /* Карточки */
 
     .cards-wrapper {
       width: 100%;
@@ -281,6 +285,8 @@
       overflow: hidden;
     }
 
+    /* Оверлей смены фото */
+
     .image-overlay {
       position: absolute;
       left: 10px;
@@ -306,11 +312,58 @@
       font-size: 13px;
     }
 
+    /* Подсказка под генератором */
+
     .footer-note {
       font-size: 11px;
       color: #9999b5;
       text-align: center;
       max-width: 960px;
+    }
+
+    /* Футер сайта */
+
+    .app-footer {
+      width: 100%;
+      padding: 26px 0 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.07);
+      text-align: center;
+      color: #bfc0d4;
+      font-size: 13px;
+      margin-top: 24px;
+    }
+
+    .footer-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .footer-title {
+      font-size: 14px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #d6d7e5;
+      font-weight: 600;
+    }
+
+    .footer-links a {
+      color: #6ea8ff;
+      text-decoration: none;
+      font-size: 13px;
+      transition: 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: #9ec7ff;
+    }
+
+    .footer-copy {
+      font-size: 12px;
+      opacity: 0.7;
     }
 
     @media print {
@@ -333,7 +386,8 @@
       }
 
       .footer-note,
-      .image-overlay {
+      .image-overlay,
+      .app-footer {
         display: none;
       }
     }
@@ -344,7 +398,7 @@
     <div class="panel-left">
       <h1>Календарь-карточки</h1>
       <div class="hint">
-        1) Выбери год • 2) Загрузите до 12 фото (по одному на месяц, в порядке с января) • 3) Печатайте из браузера.
+        1) Выбери год • 2) Загрузите до 12 фото (в порядке с января) • 3) Печатайте из браузера.
       </div>
     </div>
 
@@ -355,9 +409,9 @@
       </div>
 
       <div class="field">
-        <label for="images">Изображения (12 шт., множественный выбор)</label>
+        <label for="images">Изображения (до 12 шт., множественный выбор)</label>
         <input id="images" type="file" accept="image/*" multiple>
-        <div class="hint">Карточки идут по порядку: файл №1 — январь, №2 — февраль и т.д.</div>
+        <div class="hint">Файл №1 — январь, №2 — февраль, ... №12 — декабрь.</div>
       </div>
 
       <div class="field">
@@ -371,7 +425,7 @@
 09.05 День Победы
 12.06 День России
 04.11 День народного единства</textarea>
-        <div class="hint">Каждый праздник с новой строки, дата + пробел + название.</div>
+        <div class="hint">Каждый праздник с новой строки: дата + пробел + название.</div>
       </div>
     </div>
   </div>
@@ -381,6 +435,20 @@
   <div class="footer-note">
     Подготовь макет → нажми <b>Ctrl+P</b> / «Печать» → выбери принтер или «Сохранить как PDF».
   </div>
+
+  <footer class="app-footer">
+    <div class="footer-inner">
+      <div class="footer-title">CalGen PD</div>
+      <div class="footer-links">
+        <a href="https://github.com/lavrentevnikita-afk/calgen-pd" target="_blank" rel="noopener noreferrer">
+          GitHub проекта
+        </a>
+      </div>
+      <div class="footer-copy">
+        © <span id="copy-year"></span> — генератор календарей-карточек
+      </div>
+    </div>
+  </footer>
 
   <script>
     const monthNames = [
@@ -403,7 +471,7 @@
         .map(l => l.trim())
         .filter(Boolean);
 
-      const set = new Set();
+      const dateSet = new Set();
       const byMonth = {};
 
       for (const line of lines) {
@@ -413,17 +481,17 @@
         const mm = String(parseInt(m[2], 10)).padStart(2, "0");
         const label = (m[3] || "").trim();
         const key = `${d}.${mm}`;
-        set.add(key);
+        dateSet.add(key);
         if (!byMonth[mm]) byMonth[mm] = [];
         byMonth[mm].push({ day: d, label });
       }
 
-      // сортируем внутри месяцев по дате
+      // сортировка по дате внутри месяца
       Object.keys(byMonth).forEach(mm => {
         byMonth[mm].sort((a, b) => parseInt(a.day, 10) - parseInt(b.day, 10));
       });
 
-      return { set, byMonth };
+      return { dateSet, byMonth };
     }
 
     function getMonthMatrix(year, month) {
@@ -444,7 +512,7 @@
 
     function renderCards() {
       const year = parseInt(yearInput.value, 10) || new Date().getFullYear();
-      const { set: holidaySet, byMonth } = parseHolidays();
+      const { dateSet, byMonth } = parseHolidays();
       const today = new Date();
       const todayKey = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
 
@@ -454,10 +522,10 @@
         const card = document.createElement("div");
         card.className = "card";
 
+        /* Картинка */
         const imageDiv = document.createElement("div");
         imageDiv.className = "card-image";
 
-        // применяем сохранённое изображение, если есть
         const imgUrl = imageData[month];
         if (imgUrl) {
           imageDiv.style.backgroundImage = `url('${imgUrl}')`;
@@ -466,7 +534,6 @@
             "linear-gradient(135deg, #ffe6c4, #e2f1ff)";
         }
 
-        // оверлей для замены фото
         const overlay = document.createElement("div");
         overlay.className = "image-overlay";
         overlay.dataset.month = month;
@@ -487,7 +554,7 @@
           const mIndex = parseInt(e.target.dataset.month, 10);
           reader.onload = (ev) => {
             imageData[mIndex] = ev.target.result;
-            renderCards(); // перерисуем, чтобы обновить только что изменённую карточку
+            renderCards();
           };
           reader.readAsDataURL(file);
         });
@@ -495,6 +562,7 @@
         imageDiv.appendChild(overlay);
         imageDiv.appendChild(hiddenInput);
 
+        /* Календарь */
         const calDiv = document.createElement("div");
         calDiv.className = "card-calendar";
 
@@ -523,16 +591,19 @@
 
         const cells = getMonthMatrix(year, month);
         const monthIndex = month + 1;
+
         for (const val of cells) {
           const cell = document.createElement("div");
           cell.className = "day-cell";
+
           if (val === null) {
             cell.classList.add("empty");
           } else {
             cell.textContent = val;
+
             const dStr = String(val).padStart(2, "0");
             const mStr = String(monthIndex).padStart(2, "0");
-            const isHol = holidaySet.has(`${dStr}.${mStr}`);
+            const isHol = dateSet.has(`${dStr}.${mStr}`);
             const isWend = isWeekend(year, month, val);
 
             if (isWend) cell.classList.add("weekend");
@@ -543,6 +614,7 @@
               cell.classList.add("today");
             }
           }
+
           daysGrid.appendChild(cell);
         }
 
@@ -561,6 +633,7 @@
         holidayListDiv.className = "holiday-list";
         const monthKey = String(monthIndex).padStart(2, "0");
         const monthHolidays = byMonth[monthKey] || [];
+
         if (monthHolidays.length) {
           const title = document.createElement("div");
           title.className = "holiday-list-title";
@@ -588,7 +661,7 @@
       }
     }
 
-    // множественная загрузка 12 картинок подряд
+    // множественная загрузка 12 картинок
     imagesInput.addEventListener("change", () => {
       const files = Array.from(imagesInput.files || []).slice(0, 12);
       files.forEach((file, idx) => {
@@ -604,6 +677,9 @@
 
     yearInput.addEventListener("input", renderCards);
     holidaysInput.addEventListener("input", renderCards);
+
+    // текущий год в футере
+    document.getElementById("copy-year").textContent = new Date().getFullYear();
 
     // стартовый рендер
     renderCards();
